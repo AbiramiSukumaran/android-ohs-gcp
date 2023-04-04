@@ -26,6 +26,21 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.fhir.demo.databinding.ActivityMainBinding
 
+import android.util.Log
+import android.view.Menu
+import androidx.core.os.bundleOf
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
+import ca.uhn.fhir.context.FhirContext
+import ca.uhn.fhir.context.FhirVersionEnum
+import com.google.android.fhir.datacapture.QuestionnaireFragment
+import com.google.android.fhir.datacapture.mapping.ResourceMapper
+import kotlinx.coroutines.launch
+import org.hl7.fhir.r4.model.Questionnaire
+import org.hl7.fhir.r4.model.Patient
+import android.app.Application
+
 const val MAX_RESOURCE_COUNT = 20
 
 class MainActivity : AppCompatActivity() {
@@ -42,7 +57,32 @@ class MainActivity : AppCompatActivity() {
     observeLastSyncTime()
     viewModel.updateLastSyncTimestamp()
   }
+  private fun submitQuestionnaire() {
 
+    // 6 Replace with code from the codelab to get a questionnaire response.
+// Get a questionnaire response
+    val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container_view_tag)
+            as QuestionnaireFragment
+    val questionnaireResponse = fragment.getQuestionnaireResponse()
+
+// Print the response to the log
+    val jsonParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+    val questionnaireResponseString =
+      jsonParser.encodeResourceToString(questionnaireResponse)
+    Log.d("response***", questionnaireResponseString)
+    val questionnaireJsonString = getStringFromAssets("new-patient-registration-paginated.json")
+    // 7 Replace with code from the codelab to extract FHIR resources from QuestionnaireResponse.
+    lifecycleScope.launch {
+      val questionnaire =
+        jsonParser.parseResource(questionnaireJsonString) as Questionnaire
+      val bundle = ResourceMapper.extract(questionnaire, questionnaireResponse)
+      Log.d("extraction result", jsonParser.encodeResourceToString(bundle))
+
+    }
+  }
+  private fun getStringFromAssets(fileName: String): String {
+    return assets.open(fileName).bufferedReader().use { it.readText() }
+  }
   override fun onBackPressed() {
     if (binding.drawer.isDrawerOpen(GravityCompat.START)) {
       binding.drawer.closeDrawer(GravityCompat.START)
