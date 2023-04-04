@@ -17,6 +17,7 @@
 package com.google.android.fhir.demo
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -65,17 +66,36 @@ class AddPatientViewModel(application: Application, private val state: SavedStat
           .any { it is Invalid }
       ) {
         isPatientSaved.value = false
+        Log.d("*****isPatientSavedFalse", isPatientSaved.value.toString())
         return@launch
       }
+      Log.d("*****isPatientSavedTrue", isPatientSaved.value.toString())
+      val entry = ResourceMapper.extract(questionnaireResource,
+        questionnaireResponse).entryFirstRep
 
-      val entry = ResourceMapper.extract(questionnaireResource, questionnaireResponse).entryFirstRep
+
+      val pass_param = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser().
+      encodeResourceToString(ResourceMapper.extract(questionnaireResource,
+        questionnaireResponse))
+
+      Log.d("*****ENTRY result", pass_param)
+
       if (entry.resource !is Patient) {
+        Log.d("*****entry.resourceFALSE", "false" )
         return@launch
       }
       val patient = entry.resource as Patient
       patient.id = generateUuid()
+
       fhirEngine.create(patient)
       isPatientSaved.value = true
+      Log.d("*****entry.isPatientSavedAGAIN", isPatientSaved.value.toString())
+     val auth = Authentication()
+
+      MyTask().onLoadHere(pass_param);
+     /* auth.makeGetRequest("https://fhir-gcp-123-uxu5wi2jpa-uc.a.run.app?fhir_data=",
+        "https://fhir-gcp-123-uxu5wi2jpa-uc.a.run.app?fhir_data=",
+        pass_param);*/
     }
   }
 
