@@ -17,6 +17,7 @@
 package com.google.android.fhir.demo
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -29,6 +30,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.fhir.datacapture.QuestionnaireFragment
 import org.hl7.fhir.r4.model.QuestionnaireResponse
+
 
 /** A fragment class to show patient registration screen. */
 class AddPatientFragment : Fragment(R.layout.add_patient_fragment) {
@@ -55,6 +57,8 @@ class AddPatientFragment : Fragment(R.layout.add_patient_fragment) {
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
     return when (item.itemId) {
       R.id.action_add_patient_submit -> {
+        Log.d("*****action_add_patient_submit", item.itemId.toString())
+        Log.d("*****action_add_patient_submit", R.id.action_add_patient_submit.toString())
         onSubmitAction()
         true
       }
@@ -89,9 +93,11 @@ class AddPatientFragment : Fragment(R.layout.add_patient_fragment) {
   }
 
   private fun onSubmitAction() {
-    val questionnaireFragment =
+        val questionnaireFragment =
       childFragmentManager.findFragmentByTag(QUESTIONNAIRE_FRAGMENT_TAG) as QuestionnaireFragment
+    Log.d("*****onSubmitAction", questionnaireFragment.getQuestionnaireResponse().toString())
     savePatient(questionnaireFragment.getQuestionnaireResponse())
+    observePatientSaveAction()
   }
 
   private fun savePatient(questionnaireResponse: QuestionnaireResponse) {
@@ -99,12 +105,15 @@ class AddPatientFragment : Fragment(R.layout.add_patient_fragment) {
   }
 
   private fun observePatientSaveAction() {
+    Log.d("*****observePatientSaveAction", "observe")
     viewModel.isPatientSaved.observe(viewLifecycleOwner) {
       if (!it) {
+        Log.d("*****observePatientSaveAction", "inputs missing")
         Toast.makeText(requireContext(), "Inputs are missing.", Toast.LENGTH_SHORT).show()
         return@observe
       }
       Toast.makeText(requireContext(), "Patient is saved.", Toast.LENGTH_SHORT).show()
+      Log.d("*****observePatientSaveAction", "Patient is saved")
       NavHostFragment.findNavController(this).navigateUp()
     }
   }
