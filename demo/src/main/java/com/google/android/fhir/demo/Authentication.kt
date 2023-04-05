@@ -28,7 +28,7 @@ import java.io.InputStream
         val filePath: String = "com/google/android/fhir/demo/application_default_credentials.json"
         //val filePath = "application_default_credentials.json"
 
-        val str: String = "{\"client_id\": \"764086051850-6qr4p6gpi6hn506pt8ejuq83di341hur.apps.googleusercontent.com\", \"client_secret\": \"d-FL95Q19q7MQmFpd7hHD0Ty\", \"refresh_token\": \"1//0giU5Tr2UY5oJCgYIARAAGBASNwF-L9IrQbMICfRuWnQr4n58eJktsnKYPni0isCELlRL_k73QnQNrEPCYTk6OwOBGP_fA6SxEao\", \"type\": \"authorized_user\"}"
+        val str: String = "<<YOUR_CLIENT_CREDENTIAL>>"
         val inputstr: InputStream = ByteArrayInputStream(str.toByteArray())
         val credentials: GoogleCredentials = GoogleCredentials.fromStream(inputstr)
             //GoogleCredentials.getApplicationDefault().createScoped(setOf(CloudHealthcareScopes.CLOUD_PLATFORM))
